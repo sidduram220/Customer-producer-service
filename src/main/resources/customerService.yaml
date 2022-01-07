@@ -19,16 +19,16 @@ paths:
               $ref: '#/components/schemas/customer'
       responses:
         200:
-          description: A User object
+          description: Ok
           content:
            application/json:
              schema:
-               $ref: "#/components/schemas/apiResponse"
+               $ref: "#/components/schemas/customerResponse"
                
 
 components :
   schemas:
-   apiResponse:
+   customerResponse:
     type: "object"
     properties:
       status:
