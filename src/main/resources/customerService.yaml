@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  description: "API Documentation  for customer"
+  version: "0.0.1"
+  title: "API Documentation"
+tags:
+- name: "customer"
+  description: "About Customer"
+          
+paths:
+  /customer:
+    post:
+      summary: Api to publish customer details through kafka.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer'
+      responses:
+        200:
+          description: A User object
+          content:
+           application/json:
+             schema:
+               $ref: "#/components/schemas/apiResponse"
+               
+
+components :
+  schemas:
+   apiResponse:
+    type: "object"
+    properties:
+      status:
+       type: "string"
+      message:
+       type : "string"
+      errorType :
+       type : "string"
+   address :
+    type: "object"
+    required: 
+    - "addressLine1"
+    - "postalCode"
+    properties:
+      addressLine1:
+        type: "string"
+        maxLength: 50
+      addressLine2:
+        type: "string"
+      street:
+        type: "string"
+        maxLength: 50
+      postalCode:
+        type: "integer"
+        maxLength: 5
+   customer:
+    type: "object"
+    required:
+    - "customerNumber"
+    - "firstName"
+    - "lastName"
+    - "birthDate"
+    - "country"
+    - "countryCode"
+    - "mobileNumber"
+    - "email"
+    - "customerStatus"
+    - "address"
+    properties:
+      customerNumber:
+        type: "string"
+        maxLength: 10
+      firstName:
+        type: "string"
+        minLength: 10
+        maxLength: 50
+      lastName:
+        type: "string"
+        minLength: 10
+        maxLength: 50
+      birthDate:
+        type: "string"
+        format: "date"
+      country:
+        type: "string"
+      countryCode:
+        type: "string"
+        maxLength: 2
+      mobileNumber:
+        type: "integer"
+        maxLength: 10
+      email:
+        type: "string"
+        maxLength: 50
+      customerStatus:
+        type: "string"
+        description: "customer status"
+        enum:
+        - "Open"
+        - "Close"
+        - "Suspended"
+        - "Restored"
+      address:
+        $ref: "#/components/schemas/address"
