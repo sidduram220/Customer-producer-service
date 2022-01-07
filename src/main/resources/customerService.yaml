@@ -13,10 +13,6 @@ paths:
       summary: Api to publish customer details through kafka.
       parameters: 
        - in: header
-         name: Authorization
-         schema:
-            type: string
-       - in: header
          name: Transaction-Id
          schema:
             type: string
@@ -37,8 +33,24 @@ paths:
            application/json:
              schema:
                $ref: "#/components/schemas/customerResponse"
+               
+
+security:
+  - OAuth2:
+      - read
+      - write
 
 components :
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: http://localhost:8080/oauth/authorize
+          tokenUrl: http://localhost:8080/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
   schemas:
    customerResponse:
     type: "object"
