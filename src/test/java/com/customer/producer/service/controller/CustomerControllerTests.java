@@ -3,9 +3,7 @@ package com.customer.producer.service.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.Date;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
@@ -19,9 +17,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import com.customer.producer.service.model.Address;
+import org.springframework.util.MultiValueMap;import com.customer.producer.service.model.Address;
 import com.customer.producer.service.model.Customer;
 import com.customer.producer.service.model.Customer.CustomerStatusEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
