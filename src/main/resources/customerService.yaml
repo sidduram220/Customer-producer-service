@@ -112,7 +112,7 @@ components :
         type: "string"
         maxLength: 2
       mobileNumber:
-        type: "integer"
+        type: "string"
         maxLength: 10
       email:
         type: "string"

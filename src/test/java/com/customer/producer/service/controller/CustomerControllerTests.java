@@ -3,7 +3,9 @@ package com.customer.producer.service.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.Date;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
@@ -17,10 +19,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;import com.customer.producer.service.model.Address;
+import org.springframework.util.MultiValueMap;
+
+import com.customer.producer.service.model.Address;
 import com.customer.producer.service.model.Customer;
 import com.customer.producer.service.model.Customer.CustomerStatusEnum;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.customer.producer.service.util.ObjectMapperUtil;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,28 +38,21 @@ public class CustomerControllerTests {
 
 	@Test
 	void publishCustomerInfoTest() throws Exception {
-		Customer c = customer();
+		Customer customer = getCustomer();
 		String accessToken = obtainAccessToken();
 		mvc.perform(MockMvcRequestBuilders.post("/customer/produce").header("Authorization", "bearer " + accessToken)
-				.contentType(MediaType.APPLICATION_JSON).content(asJsonString(c)))
-				.andExpect(MockMvcResultMatchers.status().isOk());
+				.header("Transaction-Id", "101").header("Activity-Id", "102").contentType(MediaType.APPLICATION_JSON)
+				.content(ObjectMapperUtil.asJsonString(customer))).andExpect(MockMvcResultMatchers.status().isOk());
 
 	}
 
 	@Test
 	void accessUnauthorizedTest() throws Exception {
-		Customer c = customer();
+		Customer customer = getCustomer();
 		mvc.perform(MockMvcRequestBuilders.post("/customer/produce").contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(c))).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+				.content(ObjectMapperUtil.asJsonString(customer)))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized());
 
-	}
-
-	public static String asJsonString(final Object obj) {
-		try {
-			return new ObjectMapper().writeValueAsString(obj);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	private String obtainAccessToken() throws Exception {
@@ -73,7 +70,7 @@ public class CustomerControllerTests {
 		return jsonParser.parseMap(resultString).get("access_token").toString();
 	}
 
-	private Customer customer() {
+	private Customer getCustomer() {
 		Customer c = new Customer();
 		Address ad = new Address();
 		ad.setAddressLine1("Chinnahothur");
@@ -83,11 +80,11 @@ public class CustomerControllerTests {
 		c.setCountry("India");
 		c.setCountryCode("IN");
 		c.setCustomerNumber("0123456789");
-		c.setCustomerStatus(CustomerStatusEnum.OPEN);
+		c.setCustomerStatus(CustomerStatusEnum.O);
 		c.setEmail("sidduram220@gmail.com");
 		c.setFirstName("Siddaramappa");
 		c.setLastName("peddahulthi");
-		c.setMobileNumber(9032);
+		c.setMobileNumber("9032848303");
 		return c;
 	}
 

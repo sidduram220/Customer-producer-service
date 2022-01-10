@@ -39,7 +39,7 @@ public class Customer {
 	private String countryCode;
 
 	@JsonProperty("mobileNumber")
-	private Integer mobileNumber;
+	private String mobileNumber;
 
 	@JsonProperty("email")
 	private String email;
@@ -48,13 +48,13 @@ public class Customer {
 	 * customer status
 	 */
 	public enum CustomerStatusEnum {
-		OPEN("Open"),
+		O("Open"),
 
-		CLOSE("Close"),
+		C("Close"),
 
-		SUSPENDED("Suspended"),
+		S("Suspended"),
 
-		RESTORED("Restored");
+		R("Restored");
 
 		private String value;
 
@@ -221,7 +221,7 @@ public class Customer {
 		this.countryCode = countryCode;
 	}
 
-	public Customer mobileNumber(Integer mobileNumber) {
+	public Customer mobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
 		return this;
 	}
@@ -234,11 +234,11 @@ public class Customer {
 	@ApiModelProperty(required = true, value = "")
 	@NotNull
 
-	public Integer getMobileNumber() {
+	public String getMobileNumber() {
 		return mobileNumber;
 	}
 
-	public void setMobileNumber(Integer mobileNumber) {
+	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
 	}
 
