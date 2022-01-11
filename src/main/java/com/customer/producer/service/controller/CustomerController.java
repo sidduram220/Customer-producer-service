@@ -45,13 +45,13 @@ public class CustomerController {
 			@RequestHeader(value = ACTIVITYID) String activityId) {
 		CustomerRequest customerRequest = customerRequestConverter.covertRequestWithMasking(customer);
 		String jsonRequest = ObjectMapperUtil.asJsonString(customerRequest);
-		log.info("customer request :" + jsonRequest);
+		log.info("customer request : {}", jsonRequest);
 		Message<CustomerRequest> message = MessageBuilder.withPayload(customerRequest)
 				.setHeader(KafkaHeaders.TOPIC, MYTOPIC).build();
 		kafkaTemplate.send(message);
 		CustomerResponse response = new CustomerResponse("Success", "message has been published");
 		String jsonResponse = ObjectMapperUtil.asJsonString(response);
-		log.info("customer response :" + jsonResponse);
+		log.info("customer response : {}", jsonResponse);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

@@ -11,10 +11,6 @@ public class CustomerResponse {
 		this.message = message;
 	}
 
-	public CustomerResponse() {
-		// TODO Auto-generated constructor stub
-	}
-
 	public String getStatus() {
 		return status;
 	}

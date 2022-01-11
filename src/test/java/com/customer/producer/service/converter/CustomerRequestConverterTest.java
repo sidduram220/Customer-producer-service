@@ -14,7 +14,7 @@ import com.customer.producer.service.model.Customer.CustomerStatusEnum;
 import com.customer.producer.service.model.CustomerRequest;
 
 @SpringBootTest
-public class CustomerRequestConverterTest {
+class CustomerRequestConverterTest {
 
 	@Autowired
 	CustomerRequestConverter customerRequestConverter;

@@ -2,6 +2,7 @@ package com.customer.producer.service.kafka.config;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,7 @@ public class KafkaConfig {
 		configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 		configs.put(ProducerConfig.ACKS_CONFIG, "all");
-		return new DefaultKafkaProducerFactory<String, Object>(configs);
+		return new DefaultKafkaProducerFactory<>(configs);
 	}
 
 	@Bean

@@ -16,54 +16,65 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import com.customer.producer.service.model.ErrorResponse;
 
 @ControllerAdvice
-public class CustomException {
+public class CustomHandler {
+
+	private static final String FAILURE = "Failure";
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException e) {
 		Map<String, String> errors = new HashMap<>();
-		e.getBindingResult().getAllErrors().forEach((error) -> {
+		e.getBindingResult().getAllErrors().forEach(error -> {
 			String fieldName = ((FieldError) error).getField();
 			String errorMessage = error.getDefaultMessage();
 			errors.put(fieldName, errorMessage);
 		});
-		ErrorResponse cr = new ErrorResponse("Failure", errors.toString(), e.getClass().getSimpleName());
-		return new ResponseEntity<ErrorResponse>(cr, HttpStatus.BAD_REQUEST);
+		ErrorResponse cr = new ErrorResponse(FAILURE, errors.toString(), e.getClass().getSimpleName());
+		return new ResponseEntity<>(cr, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(AuthenticationException.class)
 	public ResponseEntity<ErrorResponse> handleException(AuthenticationException e) {
 		ErrorResponse response = new ErrorResponse();
-		response.setStatus("failure");
+		response.setStatus(FAILURE);
 		response.setMessage(e.getMessage());
 		response.setErrorType(e.getClass().getSimpleName());
-		return new ResponseEntity<ErrorResponse>(response, HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(NoHandlerFoundException.class)
 	public ResponseEntity<ErrorResponse> handleException(NoHandlerFoundException e) {
 		ErrorResponse response = new ErrorResponse();
-		response.setStatus("failure");
+		response.setStatus(FAILURE);
 		response.setMessage(e.getMessage());
 		response.setErrorType(e.getClass().getSimpleName());
-		return new ResponseEntity<ErrorResponse>(response, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(MissingRequestHeaderException.class)
 	public ResponseEntity<ErrorResponse> handleException(MissingRequestHeaderException e) {
 		ErrorResponse response = new ErrorResponse();
-		response.setStatus("failure");
-		response.setMessage(e.getMessage());
+		response.setStatus(FAILURE);
+		response.setMessage("Missing header : " + e.getMessage());
 		response.setErrorType(e.getClass().getSimpleName());
-		return new ResponseEntity<ErrorResponse>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleException(Exception e) {
 		ErrorResponse response = new ErrorResponse();
-		response.setStatus("failure");
-		response.setMessage(e.getMessage());
+		response.setStatus(FAILURE);
+		response.setMessage("General exception : " + e.getMessage());
 		response.setErrorType(e.getClass().getSimpleName());
-		return new ResponseEntity<ErrorResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(ObjectMapperException.class)
+	public ResponseEntity<ErrorResponse> handleException(ObjectMapperException e) {
+		ErrorResponse response = new ErrorResponse();
+		response.setStatus(FAILURE);
+		response.setMessage("json exception : " + e.getMessage());
+		response.setErrorType(e.getClass().getSimpleName());
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 }

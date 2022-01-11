@@ -28,7 +28,7 @@ import com.customer.producer.service.util.ObjectMapperUtil;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CustomerControllerTests {
+class CustomerControllerTests {
 
 	@Autowired
 	MockMvc mvc;
