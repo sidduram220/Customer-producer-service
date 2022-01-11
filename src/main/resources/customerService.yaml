@@ -8,16 +8,18 @@ tags:
   description: "About Customer"
           
 paths:
-  /customer:
+  /customer/v1/produce:
     post:
       summary: Api to publish customer details through kafka.
       parameters: 
        - in: header
          name: Transaction-Id
+         required: true
          schema:
             type: string
        - in: header
          name: Activity-Id
+         required: true
          schema:
             type: string
       requestBody:
@@ -33,6 +35,28 @@ paths:
            application/json:
              schema:
                $ref: "#/components/schemas/customerResponse"
+        401:
+          description: Unauthorized
+          content:
+           application/json:
+             schema:
+              properties:
+                error :
+                 type: string
+                error_description :
+                 type: string
+               
+        403:
+          description: Can not authorise the request
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+        504:
+          description: Service unavailable
+        
                
 
 security:
