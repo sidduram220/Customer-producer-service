@@ -17,27 +17,22 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
 	@Autowired
-    private AuthenticationManager authenticationManager;
-	
+	private AuthenticationManager authenticationManager;
+
 	@Autowired
 	BCryptPasswordEncoder bCryptPasswordEncoder;
-	
+
 	@Override
-    public void configure(final AuthorizationServerEndpointsConfigurer endpoints) {
-		endpoints.tokenStore(tokenStore())
-			.authenticationManager(authenticationManager);
-    }
-	
+	public void configure(final AuthorizationServerEndpointsConfigurer endpoints) {
+		endpoints.tokenStore(tokenStore()).authenticationManager(authenticationManager);
+	}
+
 	@Override
-    public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.inMemory() 
-	        .withClient("client") 
-	        .secret(bCryptPasswordEncoder.encode("clientpassword"))
-	        .scopes("read", "write") 
-	        .authorizedGrantTypes("password")
-	        .accessTokenValiditySeconds(900);
-    }
-	
+	public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
+		clients.inMemory().withClient("client").secret(bCryptPasswordEncoder.encode("clientpassword"))
+				.scopes("read", "write").authorizedGrantTypes("password").accessTokenValiditySeconds(900);
+	}
+
 	@Bean
 	public TokenStore tokenStore() {
 		return new InMemoryTokenStore();

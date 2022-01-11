@@ -3,23 +3,20 @@ package com.customer.producer.service.exception;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.kafka.common.errors.AuthenticationException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.HttpClientErrorException.BadRequest;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.customer.producer.service.model.ErrorResponse;
 
 @ControllerAdvice
-public class CustomException extends ResponseEntityExceptionHandler {
+public class CustomException {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException e) {
@@ -39,11 +36,20 @@ public class CustomException extends ResponseEntityExceptionHandler {
 		response.setStatus("failure");
 		response.setMessage(e.getMessage());
 		response.setErrorType(e.getClass().getSimpleName());
-		return new ResponseEntity<ErrorResponse>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<ErrorResponse>(response, HttpStatus.UNAUTHORIZED);
 	}
 
-	@ExceptionHandler(BadRequest.class)
-	public ResponseEntity<ErrorResponse> handleException(BadRequest e) {
+	@ExceptionHandler(NoHandlerFoundException.class)
+	public ResponseEntity<ErrorResponse> handleException(NoHandlerFoundException e) {
+		ErrorResponse response = new ErrorResponse();
+		response.setStatus("failure");
+		response.setMessage(e.getMessage());
+		response.setErrorType(e.getClass().getSimpleName());
+		return new ResponseEntity<ErrorResponse>(response, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(MissingRequestHeaderException.class)
+	public ResponseEntity<ErrorResponse> handleException(MissingRequestHeaderException e) {
 		ErrorResponse response = new ErrorResponse();
 		response.setStatus("failure");
 		response.setMessage(e.getMessage());
@@ -51,25 +57,13 @@ public class CustomException extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<ErrorResponse>(response, HttpStatus.BAD_REQUEST);
 	}
 
-//	@ExceptionHandler(NoHandlerFoundException.class)
-//	@ResponseStatus(HttpStatus.NOT_FOUND)
-//	public ResponseEntity<ErrorResponse> handleException(NoHandlerFoundException e) {
-//		ErrorResponse response = new ErrorResponse();
-//		response.setStatus("failure");
-//		response.setMessage(e.getMessage());
-//		response.setErrorType(e.getClass().getSimpleName());
-//		return new ResponseEntity<ErrorResponse>(response, HttpStatus.NOT_FOUND);
-//	}
-
-	@Override
-	protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
-			HttpStatus status, WebRequest request) {
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleException(Exception e) {
 		ErrorResponse response = new ErrorResponse();
 		response.setStatus("failure");
-		response.setMessage(ex.getMessage());
-		response.setErrorType(ex.getClass().getSimpleName());
-		// TODO Auto-generated method stub
-		return super.handleNoHandlerFoundException(ex, headers, status, request);
+		response.setMessage(e.getMessage());
+		response.setErrorType(e.getClass().getSimpleName());
+		return new ResponseEntity<ErrorResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }
