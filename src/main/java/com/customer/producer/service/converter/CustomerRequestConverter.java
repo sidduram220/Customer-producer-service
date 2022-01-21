@@ -8,28 +8,21 @@ import com.customer.producer.service.model.CustomerRequest;
 @Service
 public class CustomerRequestConverter {
 
+	private static final String firstFourDigits = "(?<!....).";
+	private static final String lastFourDigits = "\\w(?!\\w{4})";
+
 	public CustomerRequest covertRequestWithMasking(Customer customer) {
-		CustomerRequest cr = new CustomerRequest();
-		cr.setAddress(customer.getAddress());
-		cr.setBirthDate(maskString(customer.getBirthDate().toString(), 0, 4, '*'));
-		cr.setCountry(customer.getCountry());
-		cr.setCountryCode(customer.getCountryCode());
-		cr.setCustomerNumber(maskString(customer.getCustomerNumber(), 6, 10, '*'));
-		cr.setCustomerStatus(customer.getCustomerStatus().name());
-		cr.setEmail(maskString(customer.getEmail(), 0, 4, '*'));
-		cr.setFirstName(customer.getFirstName());
-		cr.setLastName(customer.getLastName());
-		cr.setMobileNumber(customer.getMobileNumber());
-		return cr;
+		CustomerRequest customerRequest = new CustomerRequest();
+		customerRequest.setAddress(customer.getAddress());
+		customerRequest.setBirthDate(customer.getBirthDate().toString().replaceAll(firstFourDigits, "*"));
+		customerRequest.setCountry(customer.getCountry());
+		customerRequest.setCountryCode(customer.getCountryCode());
+		customerRequest.setCustomerNumber(customer.getCustomerNumber().replaceAll(lastFourDigits, "*"));
+		customerRequest.setCustomerStatus(customer.getCustomerStatus().name());
+		customerRequest.setEmail(customer.getEmail().replaceAll(firstFourDigits, "*"));
+		customerRequest.setFirstName(customer.getFirstName());
+		customerRequest.setLastName(customer.getLastName());
+		customerRequest.setMobileNumber(customer.getMobileNumber());
+		return customerRequest;
 	}
-
-	private static String maskString(String strText, int start, int end, char maskChar) {
-		int maskLength = end - start;
-		StringBuilder sbMaskString = new StringBuilder(maskLength);
-		for (int i = 0; i < maskLength; i++) {
-			sbMaskString.append(maskChar);
-		}
-		return strText.substring(0, start) + sbMaskString.toString() + strText.substring(start + maskLength);
-	}
-
 }

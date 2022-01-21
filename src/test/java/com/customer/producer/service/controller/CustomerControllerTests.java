@@ -1,23 +1,15 @@
 package com.customer.producer.service.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -26,66 +18,58 @@ import com.customer.producer.service.model.Customer;
 import com.customer.producer.service.model.Customer.CustomerStatusEnum;
 import com.customer.producer.service.util.ObjectMapperUtil;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class CustomerControllerTests {
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
-	@Autowired
-	MockMvc mvc;
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+public class CustomerControllerTests {
 
 	@MockBean
 	KafkaTemplate<String, Object> kafkaTemplate;
 
 	@Test
-	void publishCustomerInfoTest() throws Exception {
+	void publishCustomerInfoTest() {
+
 		Customer customer = getCustomer();
+		String jsonBody = ObjectMapperUtil.asJsonString(customer);
 		String accessToken = obtainAccessToken();
-		mvc.perform(MockMvcRequestBuilders.post("/customer/produce").header("Authorization", "bearer " + accessToken)
-				.header("Transaction-Id", "101").header("Activity-Id", "102").contentType(MediaType.APPLICATION_JSON)
-				.content(ObjectMapperUtil.asJsonString(customer))).andExpect(MockMvcResultMatchers.status().isOk());
+
+		Response response = given().header("Authorization", "bearer " + accessToken).header("Transaction-Id", "101")
+				.header("Activity-Id", "102").accept(ContentType.JSON).contentType(ContentType.JSON).and()
+				.body(jsonBody).when().post("/customer/v1/produce");
+		assertEquals(200, response.getStatusCode());
 
 	}
 
-	@Test
-	void accessUnauthorizedTest() throws Exception {
-		Customer customer = getCustomer();
-		mvc.perform(MockMvcRequestBuilders.post("/customer/produce").contentType(MediaType.APPLICATION_JSON)
-				.content(ObjectMapperUtil.asJsonString(customer)))
-				.andExpect(MockMvcResultMatchers.status().isUnauthorized());
-
-	}
-
-	private String obtainAccessToken() throws Exception {
+	private String obtainAccessToken() {
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "password");
 		params.add("client_id", "client");
 		params.add("username", "user");
 		params.add("password", "user");
-		ResultActions result = mvc
-				.perform(post("/oauth/token").params(params).accept("application/x-www-form-urlencoded")
-						.header("authorization", "Basic Y2xpZW50OmNsaWVudHBhc3N3b3Jk"))
-				.andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"));
-		String resultString = result.andReturn().getResponse().getContentAsString();
+		Response response = given().params(params).accept("application/x-www-form-urlencoded")
+				.header("authorization", "Basic Y2xpZW50OmNsaWVudHBhc3N3b3Jk").when().post("/oauth/token");
+		String body = response.getBody().asString();
 		JacksonJsonParser jsonParser = new JacksonJsonParser();
-		return jsonParser.parseMap(resultString).get("access_token").toString();
+		return jsonParser.parseMap(body).get("access_token").toString();
 	}
 
 	private Customer getCustomer() {
-		Customer c = new Customer();
-		Address ad = new Address();
-		ad.setAddressLine1("Chinnahothur");
-		ad.setPostalCode(518395);
-		c.setAddress(ad);
-		c.setBirthDate(new Date());
-		c.setCountry("India");
-		c.setCountryCode("IN");
-		c.setCustomerNumber("0123456789");
-		c.setCustomerStatus(CustomerStatusEnum.O);
-		c.setEmail("sidduram220@gmail.com");
-		c.setFirstName("Siddaramappa");
-		c.setLastName("peddahulthi");
-		c.setMobileNumber("9032848303");
-		return c;
+		Customer customer = new Customer();
+		Address address = new Address();
+		address.setAddressLine1("Chinnahothur");
+		address.setPostalCode(518395);
+		customer.setAddress(address);
+		customer.setBirthDate(new Date());
+		customer.setCountry("India");
+		customer.setCountryCode("IN");
+		customer.setCustomerNumber("0123456789");
+		customer.setCustomerStatus(CustomerStatusEnum.O);
+		customer.setEmail("sidduram220@gmail.com");
+		customer.setFirstName("Siddaramappa");
+		customer.setLastName("peddahulthi");
+		customer.setMobileNumber("9032848303");
+		return customer;
 	}
 
 }

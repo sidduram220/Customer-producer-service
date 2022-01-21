@@ -21,21 +21,21 @@ class CustomerRequestConverterTest {
 
 	@Test
 	void covertRequestWithMaskingTest() throws Exception {
-		CustomerRequest cr = customerRequest();
-		assertEquals("012345****", cr.getCustomerNumber());
-		assertEquals("****il@gmail.com", cr.getEmail());
+		CustomerRequest customerRequest = customerRequest();
+		assertEquals("012345****", customerRequest.getCustomerNumber());
+		assertEquals("****il@gmail.com", customerRequest.getEmail());
 
 	}
 
 	private CustomerRequest customerRequest() throws Exception {
-		Customer c = new Customer();
-		c.setAddress(new Address());
-		c.setCustomerNumber("0123456789");
-		c.setEmail("mymail@gmail.com");
-		c.setBirthDate(new Date());
-		c.setCustomerStatus(CustomerStatusEnum.O);
-		CustomerRequest cr = customerRequestConverter.covertRequestWithMasking(c);
-		return cr;
+		Customer customer = new Customer();
+		customer.setAddress(new Address());
+		customer.setCustomerNumber("0123456789");
+		customer.setEmail("mymail@gmail.com");
+		customer.setBirthDate(new Date());
+		customer.setCustomerStatus(CustomerStatusEnum.O);
+		CustomerRequest customerRequest = customerRequestConverter.covertRequestWithMasking(customer);
+		return customerRequest;
 	}
 
 }

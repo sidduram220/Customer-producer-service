@@ -1,6 +1,7 @@
 package com.customer.producer.service.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,17 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
+	@Value("${client.id}")
+	private String clientId;
+	@Value("${clinet.secret}")
+	private String clinetSecret;
+	@Value("${grant.type}")
+	private String grantType;
+	@Value("${token.validity}")
+	private String tokenValidity;
+	@Value("${client.scopes}")
+	private String[] scopes;
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
@@ -29,8 +41,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 	@Override
 	public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.inMemory().withClient("client").secret(bCryptPasswordEncoder.encode("clientpassword"))
-				.scopes("read", "write").authorizedGrantTypes("password").accessTokenValiditySeconds(900);
+		clients.inMemory().withClient(clientId).secret(bCryptPasswordEncoder.encode(clinetSecret)).scopes(scopes)
+				.authorizedGrantTypes(grantType).accessTokenValiditySeconds(Integer.valueOf(tokenValidity));
 	}
 
 	@Bean

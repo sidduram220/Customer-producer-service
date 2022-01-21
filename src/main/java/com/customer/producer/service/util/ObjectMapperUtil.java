@@ -1,6 +1,7 @@
 package com.customer.producer.service.util;
 
 import com.customer.producer.service.exception.ObjectMapperException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ObjectMapperUtil {
@@ -12,8 +13,9 @@ public class ObjectMapperUtil {
 	public static String asJsonString(final Object obj) {
 		try {
 			return new ObjectMapper().writeValueAsString(obj);
-		} catch (Exception e) {
+		} catch (JsonProcessingException e) {
 			throw new ObjectMapperException("Exception while converting Object as json");
+
 		}
 	}
 

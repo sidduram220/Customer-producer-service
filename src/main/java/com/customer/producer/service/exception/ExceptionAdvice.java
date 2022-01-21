@@ -16,7 +16,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import com.customer.producer.service.model.ErrorResponse;
 
 @ControllerAdvice
-public class CustomHandler {
+public class ExceptionAdvice {
 
 	private static final String FAILURE = "Failure";
 
@@ -72,9 +72,9 @@ public class CustomHandler {
 	public ResponseEntity<ErrorResponse> handleException(ObjectMapperException e) {
 		ErrorResponse response = new ErrorResponse();
 		response.setStatus(FAILURE);
-		response.setMessage("json exception : " + e.getMessage());
+		response.setMessage("Object mapper exception : " + e.getMessage());
 		response.setErrorType(e.getClass().getSimpleName());
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }
