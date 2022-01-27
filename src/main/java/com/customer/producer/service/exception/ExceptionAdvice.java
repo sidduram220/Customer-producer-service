@@ -59,15 +59,6 @@ public class ExceptionAdvice {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleException(Exception e) {
-		ErrorResponse response = new ErrorResponse();
-		response.setStatus(FAILURE);
-		response.setMessage("General exception : " + e.getMessage());
-		response.setErrorType(e.getClass().getSimpleName());
-		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
 	@ExceptionHandler(ObjectMapperException.class)
 	public ResponseEntity<ErrorResponse> handleException(ObjectMapperException e) {
 		ErrorResponse response = new ErrorResponse();

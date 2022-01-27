@@ -13,7 +13,7 @@ public class ObjectMapperUtil {
 	public static String asJsonString(final Object obj) {
 		try {
 			return new ObjectMapper().writeValueAsString(obj);
-		} catch (JsonProcessingException e) {
+		} catch (JsonProcessingException exception) {
 			throw new ObjectMapperException("Exception while converting Object as json");
 
 		}

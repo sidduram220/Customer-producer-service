@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -30,9 +29,6 @@ public class CustomerController {
 	private static final String ACTIVITYID = "Activity-Id";
 
 	@Autowired
-	KafkaTemplate<String, Object> kafkaTemplate;
-
-	@Autowired
 	CustomerRequestConverter customerRequestConverter;
 
 	@Autowired
@@ -43,7 +39,7 @@ public class CustomerController {
 			@RequestHeader(value = TRANSACTIONID) String transactionId,
 			@RequestHeader(value = ACTIVITYID) String activityId) {
 		String customerJsonRequest = ObjectMapperUtil
-				.asJsonString(customerRequestConverter.covertRequestWithMasking(customer));
+				.asJsonString(customerRequestConverter.convertRequestWithMasking(customer));
 		log.info("customer request : {}", customerJsonRequest);
 		customerService.publish(customer);
 		CustomerResponse customerResponse = customerService.generateCustomerResponse();

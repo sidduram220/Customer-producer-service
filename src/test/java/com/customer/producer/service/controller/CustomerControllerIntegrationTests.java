@@ -1,76 +1,41 @@
 package com.customer.producer.service.controller;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.customer.producer.service.converter.CustomerRequestConverter;
 import com.customer.producer.service.model.Address;
 import com.customer.producer.service.model.Customer;
 import com.customer.producer.service.model.Customer.CustomerStatusEnum;
-import com.customer.producer.service.services.CustomerService;
 import com.customer.producer.service.util.ObjectMapperUtil;
 
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@AutoConfigureMockMvc
-public class CustomerControllerTests {
-
-	@Autowired
-	MockMvc mockMvc;
+public class CustomerControllerIntegrationTests {
 
 	@MockBean
 	KafkaTemplate<String, Object> kafkaTemplate;
 
-	@MockBean
-	CustomerService customerService;
-
-	@MockBean
-	CustomerRequestConverter customerRequestConverter;
-
 	@Test
-	void publishCustomerInfoTest() throws Exception {
+	void publishCustomerInfoTest() {
 		Customer customer = getCustomer();
 		String jsonBody = ObjectMapperUtil.asJsonString(customer);
 		String accessToken = obtainAccessToken();
-		mockMvc.perform(MockMvcRequestBuilders.post("/customer/v1/produce")
-				.header("Authorization", "bearer " + accessToken).header("Transaction-Id", "101")
-				.header("Activity-Id", "102").contentType(MediaType.APPLICATION_JSON).content(jsonBody))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-	}
-
-	@Test
-	void publishCustomerInfoBadRequestTest() throws Exception {
-		Customer customer = getCustomer();
-		String jsonBody = ObjectMapperUtil.asJsonString(customer);
-		String accessToken = obtainAccessToken();
-		mockMvc.perform(
-				MockMvcRequestBuilders.post("/customer/v1/produce").header("Authorization", "bearer " + accessToken)
-						.contentType(MediaType.APPLICATION_JSON).content(jsonBody))
-				.andExpect(MockMvcResultMatchers.status().isBadRequest());
-	}
-
-	@Test
-	void publishCustomerInfoUnauthorizedTest() throws Exception {
-		Customer customer = getCustomer();
-		String jsonBody = ObjectMapperUtil.asJsonString(customer);
-		mockMvc.perform(MockMvcRequestBuilders.post("/customer/v1/produce").contentType(MediaType.APPLICATION_JSON)
-				.content(jsonBody)).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+		Response response = given().header("Authorization", "bearer " + accessToken).header("Transaction-Id", "101")
+				.header("Activity-Id", "102").accept(ContentType.JSON).contentType(ContentType.JSON).and()
+				.body(jsonBody).when().post("/customer/v1/produce");
+		assertEquals(200, response.getStatusCode());
 	}
 
 	private String obtainAccessToken() {
