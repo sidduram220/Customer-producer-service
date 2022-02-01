@@ -17,7 +17,7 @@ import com.customer.producer.service.model.CustomerRequest;
 class CustomerRequestConverterTest {
 
 	@Autowired
-	CustomerRequestConverter customerRequestConverter;
+	private CustomerRequestConverter customerRequestConverter;
 
 	@Test
 	void convertRequestWithMaskingTest() {

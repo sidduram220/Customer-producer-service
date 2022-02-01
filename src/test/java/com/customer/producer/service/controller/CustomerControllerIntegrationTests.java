@@ -4,14 +4,14 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import com.customer.producer.service.model.Address;
 import com.customer.producer.service.model.Customer;
@@ -25,7 +25,7 @@ import io.restassured.response.Response;
 public class CustomerControllerIntegrationTests {
 
 	@MockBean
-	KafkaTemplate<String, Object> kafkaTemplate;
+	private KafkaTemplate<String, Object> kafkaTemplate;
 
 	@Test
 	void publishCustomerInfoTest() {
@@ -39,11 +39,11 @@ public class CustomerControllerIntegrationTests {
 	}
 
 	private String obtainAccessToken() {
-		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("grant_type", "password");
-		params.add("client_id", "client");
-		params.add("username", "user");
-		params.add("password", "user");
+		Map<String, String> params = new HashMap<>();
+		params.put("grant_type", "password");
+		params.put("client_id", "client");
+		params.put("username", "user");
+		params.put("password", "user");
 		Response response = given().params(params).accept("application/x-www-form-urlencoded")
 				.header("authorization", "Basic Y2xpZW50OmNsaWVudHBhc3N3b3Jk").when().post("/oauth/token");
 		String body = response.getBody().asString();

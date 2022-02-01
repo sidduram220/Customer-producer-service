@@ -1,7 +1,5 @@
 package com.customer.producer.service.controller;
 
-import static io.restassured.RestAssured.given;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
@@ -22,26 +21,24 @@ import com.customer.producer.service.converter.CustomerRequestConverter;
 import com.customer.producer.service.model.Address;
 import com.customer.producer.service.model.Customer;
 import com.customer.producer.service.model.Customer.CustomerStatusEnum;
-import com.customer.producer.service.services.CustomerService;
+import com.customer.producer.service.service.CustomerService;
 import com.customer.producer.service.util.ObjectMapperUtil;
 
-import io.restassured.response.Response;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest
 @AutoConfigureMockMvc
 public class CustomerControllerTests {
 
 	@Autowired
-	MockMvc mockMvc;
+	private MockMvc mockMvc;
 
 	@MockBean
-	KafkaTemplate<String, Object> kafkaTemplate;
+	private KafkaTemplate<String, Object> kafkaTemplate;
 
 	@MockBean
-	CustomerService customerService;
+	private CustomerService customerService;
 
 	@MockBean
-	CustomerRequestConverter customerRequestConverter;
+	private CustomerRequestConverter customerRequestConverter;
 
 	@Test
 	void publishCustomerInfoTest() throws Exception {
@@ -73,15 +70,18 @@ public class CustomerControllerTests {
 				.content(jsonBody)).andExpect(MockMvcResultMatchers.status().isUnauthorized());
 	}
 
-	private String obtainAccessToken() {
+	private String obtainAccessToken() throws Exception {
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "password");
 		params.add("client_id", "client");
 		params.add("username", "user");
 		params.add("password", "user");
-		Response response = given().params(params).accept("application/x-www-form-urlencoded")
-				.header("authorization", "Basic Y2xpZW50OmNsaWVudHBhc3N3b3Jk").when().post("/oauth/token");
-		String body = response.getBody().asString();
+		MvcResult mvcResult = mockMvc
+				.perform(MockMvcRequestBuilders.post("/oauth/token").params(params)
+						.header("authorization", "Basic Y2xpZW50OmNsaWVudHBhc3N3b3Jk")
+						.contentType(MediaType.APPLICATION_JSON).accept("application/x-www-form-urlencoded"))
+				.andReturn();
+		String body = mvcResult.getResponse().getContentAsString();
 		JacksonJsonParser jsonParser = new JacksonJsonParser();
 		return jsonParser.parseMap(body).get("access_token").toString();
 	}
